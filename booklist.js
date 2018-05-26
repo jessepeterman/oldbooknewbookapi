@@ -1,3 +1,6 @@
+
+
+
 const BookCtrl = (function() {
   const Book = function(id, title, author, originalPublicationYear, imageUrl){
   this.id = id, 
@@ -56,7 +59,7 @@ const BookCtrl = (function() {
 
 
 function getBookByTitle(searchQuery){  
-fetch(`http://cors-anywhere.herokuapp.com/https://www.goodreads.com/search/index.xml?key=lZwKFuESgBf5KQfVqqymeA&q=${searchQuery}`)
+fetch(`https://www.goodreads.com/search/index.xml?key=lZwKFuESgBf5KQfVqqymeA&q=${searchQuery}`)
   .then((res) => res.text())
   .then((data) => {
     parser = new DOMParser();
@@ -74,14 +77,28 @@ fetch(`http://cors-anywhere.herokuapp.com/https://www.goodreads.com/search/index
    // get books original publication year 
     const originalPublicationYear = xmlDoc.getElementsByTagName("original_publication_year")[0].childNodes[0].nodeValue;
 
+  
+
     const output = `<h4>${title}</h4><p>by ${author}</p>`;
     const bookDiv = document.querySelector('.book');
     const img = document.createElement("IMG");
     img.src = `${imageUrl}`;
     bookDiv.innerHTML = output;
-    let p = document.createElement("P");
-    p.appendChild(img);
-    bookDiv.appendChild(p); 
+    // set the elemetns 
+    let pImgContainer = document.createElement("P");
+    pImgContainer.appendChild(img);
+    bookDiv.appendChild(pImgContainer); 
+    const imgError = document.createElement("P");
+
+    // check for an image and display "no public cover image error" if no image
+    if(imageUrl.search(/nophoto/) !== -1){
+      imgError.innerHTML = "(Sorry, there is currently no public image for this book.)";
+      bookDiv.appendChild(imgError);
+      console.log('no image');
+    }else if(imgError) {
+      console.log(bookDiv); //.querySelector('imgError').remove();
+    }
+
     let btn = document.createElement("BUTTON");
     let t = document.createTextNode("Add to book list?");
     btn.className = "add-btn";
